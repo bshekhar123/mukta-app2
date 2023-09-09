@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 
-const InputField = ({ placeholder, value, onChange, keyboardType }) => {
+const InputField = ({ placeholder, value, onChange, keyboardType, style }) => {
     return (
         <TextInput
             style={{
@@ -10,7 +10,7 @@ const InputField = ({ placeholder, value, onChange, keyboardType }) => {
                 borderColor: 'gray',
                 borderRadius: 5,
                 padding: 10,
-                marginVertical: 10,
+                ...style
             }}
             placeholder={placeholder}
             value={value}

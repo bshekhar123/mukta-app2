@@ -1,7 +1,7 @@
 import React from 'react'
 import DropDownPicker from 'react-native-dropdown-picker';
 
-const SelectField = ({ open, setOpen, items, value, onChange, placeholder }) => {
+const SelectField = ({ open, setOpen, items, value, onChange, placeholder, style }) => {
     return (
         <DropDownPicker
             open={open}
@@ -15,7 +15,7 @@ const SelectField = ({ open, setOpen, items, value, onChange, placeholder }) => 
                 backgroundColor: 'transparent',
                 borderColor: 'gray',
                 borderRadius: 5,
-                marginVertical: 10
+                ...style
             }}
         />
     )

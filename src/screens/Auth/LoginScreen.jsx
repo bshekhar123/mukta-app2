@@ -23,7 +23,7 @@ const Login = ({ navigation }) => {
                 else {
                     showError(res?.data?.message)
                 }
-            }
+            } // account setup -> 1: false profile complete, 2: profile complete true, 3: guest
             else {
                 const res = await doPOST(`${base_url}${ENDPOINTS.verifyOtp}`, data)
                 if (res.status === 200) {
@@ -35,13 +35,24 @@ const Login = ({ navigation }) => {
                     }
                     else {
                         await setLocalStorageItem("account", 2);
-                        navigation.navigate("Demo");
+                        navigation.navigate("Drawer");
                     }
                 }
                 else {
                     showError(res?.data?.error)
                 }
             }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleGuestClick = async () => {
+        try {
+            await setLocalStorageItem("token", "guest");
+            await setLocalStorageItem("account", 3);
+            navigation.navigate("Drawer");
+
         } catch (error) {
             console.log(error)
         }
@@ -72,9 +83,15 @@ const Login = ({ navigation }) => {
             </View>
             <TouchableOpacity style={styles.googleButton}>
                 <Text style={styles.buttonutText}>Continue with Google</Text>
-                <TouchableOpacity style={styles.gogbut}>
+                {/* <TouchableOpacity style={styles.gogbut}>
                     <Google />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.guestBtn} onPress={handleGuestClick}>
+                <Text style={styles.buttonutText}>Continue as Guest</Text>
+                {/* <TouchableOpacity style={styles.gogbut}>
+                    <Google />
+                </TouchableOpacity> */}
             </TouchableOpacity>
         </KeyboardAwareScrollView>
     );
@@ -137,10 +154,22 @@ const styles = StyleSheet.create({
     googleButton: {
         backgroundColor: '#FFFFFF',
         width: '80%',
-        height: 50,
+        height: 45,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: 'red',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    guestBtn: {
+        backgroundColor: '#FFFFFF',
+        width: '80%',
+        height: 45,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#000',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',

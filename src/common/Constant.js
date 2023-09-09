@@ -14,5 +14,7 @@ export const getImage = img => {
 
 export const ENDPOINTS = {
   sendOtp: '/auth/customer/login',
-  verifyOtp: '/auth/customer/verifyotp'
+  verifyOtp: '/auth/customer/verifyotp',
+  accountSetup: "/customer/accountsetup",
+  getCustomer: '/customer/details',
 };

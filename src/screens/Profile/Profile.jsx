@@ -1,16 +1,16 @@
 import React from 'react'
 import { Text, SafeAreaView } from 'react-native'
 
-const DemoScreen = () => {
+const ProfileScreen = () => {
     return (
         <SafeAreaView style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center'
         }}>
-            <Text>Demo Screen</Text>
+            <Text>Profile Screen</Text>
         </SafeAreaView>
     )
 }
 
-export default DemoScreen;
+export default ProfileScreen;
