@@ -6,6 +6,7 @@ export const UserContext = React.createContext();
 
 export const UserProvider = (props) => {
     const [accountData, setAccountData] = useState({});
+    const [token, setToken] = useState("");
     const getCustomer = async () => {
         try {
             const res = await doGET(`${base_url}${ENDPOINTS.getCustomer}`);
@@ -20,6 +21,8 @@ export const UserProvider = (props) => {
             value={{
                 getCustomer,
                 accountData,
+                token,
+                setToken
             }}
         >
             {props?.children}

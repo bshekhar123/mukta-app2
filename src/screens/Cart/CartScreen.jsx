@@ -4,76 +4,151 @@ import Saree from '../../data/Saree';
 import Plus from '../../assets/Icons/Plus';
 import Minus from '../../assets/Icons/Minus';
 import Navbar from '../../components/Navbar';
+import { doGET, doPOST } from '../../store/httpUtil/httpUtils';
+import { ENDPOINTS, base_url, getImage } from '../../common/Constant';
+import { useFocusEffect } from '@react-navigation/native';
 
-const OneItem = ({ cartItem, handleIncrement, handleDecrement, quantity }) => (
-    <View style={styles.container}>
-        <View style={styles.cartItem}>
-            <View style={styles.itemInfoContainer}>
-                <View style={styles.imageContainer}>
-                    <Image source={{ uri: "https://images.unsplash.com/photo-1692046904610-b5f0786a67d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" }} style={styles.image} resizeMode="cover" />
-                </View>
-                <View style={styles.itemInfo}>
-                    <Text style={styles.name}>{cartItem.name}</Text>
-                    <Text style={styles.description}>{cartItem.description}</Text>
-                    <View style={styles.priceContainer}>
-                        <Text style={styles.price}> {cartItem.price}</Text>
-                        <View style={styles.quantityContainer}>
-                            <TouchableOpacity style={styles.quantityButton} onPress={handleDecrement}>
-                                <Minus />
+const OneItem = ({ customer_id, saree_id, amount, _id, removeCart }) => {
+    const [saree, setSaree] = React.useState({})
+    const [amt, setAmt] = React.useState(amount)
+    const handleIncrement = async () => {
+        try {
+            const res = await doPOST(`${base_url}${ENDPOINTS.updateCartCount}`, { customer_id, saree_id, type: 1 })
+            console.log(res?.data?.qty)
+            setAmt(res?.data?.qty)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const handleDecrement = async () => {
+        if (amt > 1) {
+            try {
+                const res = await doPOST(`${base_url}${ENDPOINTS.updateCartCount}`, { customer_id, saree_id, type: 0 })
+                setAmt(res?.data?.qty)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+    const fetchSaree = async () => {
+        try {
+            const res = await doGET(`${base_url}${ENDPOINTS.getSaree(saree_id)}`)
+            if (res.status === 200)
+                setSaree(res.data)
+            else
+                console.log(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    React.useEffect(() => {
+        fetchSaree();
+    }, [amt])
+    return (
+        <View View style={styles.container} >
+            <View style={styles.cartItem}>
+                <View style={styles.itemInfoContainer}>
+                    <View style={styles.imageContainer}>
+                        <Image source={{ uri: getImage(saree?.thumbnail) }} style={styles.image} resizeMode="cover" />
+                    </View>
+                    <View style={styles.itemInfo}>
+                        <Text style={styles.name}>{saree.name}</Text>
+                        <Text style={styles.description}>{saree.description}</Text>
+                        <View style={styles.priceContainer}>
+                            <Text style={styles.price}> {saree.price}</Text>
+                            <View style={styles.quantityContainer}>
+                                <TouchableOpacity style={styles.quantityButton} onPress={handleDecrement}>
+                                    <Minus />
+                                </TouchableOpacity>
+                                <Text style={styles.quantityText}>{amt}</Text>
+                                <TouchableOpacity style={styles.quantityButton} onPress={handleIncrement}>
+                                    <Plus />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={styles.extraButtonsContainer}>
+                            <TouchableOpacity style={styles.extraButton} onPress={async () => await removeCart(_id)}>
+                                <Text style={styles.extraButtonText}>Remove from cart </Text>
                             </TouchableOpacity>
-                            <Text style={styles.quantityText}>{quantity}</Text>
-                            <TouchableOpacity style={styles.quantityButton} onPress={handleIncrement}>
-                                <Plus />
+                            <TouchableOpacity style={styles.extraButton}>
+                                <Text style={styles.extraButtonText}>Add to wishlist</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.extraButton}>
+                                <Text style={styles.extraButtonText}>Buy Now</Text>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                    <View style={styles.extraButtonsContainer}>
-                        <TouchableOpacity style={styles.extraButton}>
-                            <Text style={styles.extraButtonText}>Remove from cart </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.extraButton}>
-                            <Text style={styles.extraButtonText}>Add to wishlist</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.extraButton}>
-                            <Text style={styles.extraButtonText}>Buy Now</Text>
-                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
         </View>
-    </View>
-)
+    )
+}
 
 const AddToCartPage = () => {
-    const cartItem = Saree.find((item) => item.id === 1);
-    const [quantity, setQuantity] = useState(1);
+    const [data, setData] = React.useState([]);
 
-    const handleIncrement = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
-    };
-
-    const handleDecrement = () => {
-        if (quantity > 1) {
-            setQuantity((prevQuantity) => prevQuantity - 1);
+    const fetchData = async () => {
+        try {
+            const res = await doGET(`${base_url}${ENDPOINTS.getCart}`);
+            if (res.status == 200)
+                setData(res.data)
+            else {
+                setData([])
+            }
+        } catch (error) {
+            console.log(error)
         }
-    };
+    }
+
+    const removeCart = async (_id) => {
+        try {
+            const res = await doPOST(`${base_url}${ENDPOINTS.removeCart}`, { _id })
+            if (res.status == 200)
+                await fetchData()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useFocusEffect(React.useCallback(() => {
+        fetchData();
+    }, []))
 
     return (
-        <SafeAreaView style={{ backgroundColor: 'white', height: '100%' }}>
-            <Navbar />
-            <View style={styles.header}>
-                <Text style={styles.title}>Cart Items</Text>
-                <TouchableOpacity style={styles.cartButton} >
-                    <Text style={styles.cartButtonText}>Checkout</Text>
-                </TouchableOpacity>
-            </View>
-            <FlatList
-                data={[{ id: 1 }, { id: 2 }]}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.id}
-                style={{marginBottom: 50}}
-                renderItem={() => <OneItem cartItem={cartItem} handleIncrement={handleIncrement} handleDecrement={handleDecrement} quantity={quantity} />}
-            />
+        // <SafeAreaView style={{ backgroundColor: 'white', height: '100%' }}>
+        //     <Navbar />
+        //     <View style={styles.header}>
+        //         <Text style={styles.title}>Cart Items</Text>
+        //         <TouchableOpacity style={styles.cartButton} >
+        //             <Text style={styles.cartButtonText}>Checkout</Text>
+        //         </TouchableOpacity>
+        //     </View>
+        //     {
+        //         data.length === 0 ? (
+        //             <Text style={{
+        //                 marginTop: 20,
+        //                 textAlign: 'center',
+        //                 fontSize: 20,
+        //                 color: 'red'
+        //             }}>Empty Cart</Text>
+        //         ) : (
+        //             <FlatList
+        //                 data={data}
+        //                 showsVerticalScrollIndicator={false}
+        //                 keyExtractor={item => item.id}
+        //                 style={{ marginBottom: 50 }}
+        //                 renderItem={({ item }) => <OneItem {...item} removeCart={removeCart} />}
+        //             />
+        //         )
+        //     }
+        // </SafeAreaView>
+        <SafeAreaView style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+            <Text>Screen 3</Text>
         </SafeAreaView>
     );
 };

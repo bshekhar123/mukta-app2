@@ -71,11 +71,6 @@ const Profile = ({ navigation }) => {
                 <TouchableOpacity style={styles.submitButton} onPress={handleProfileSubmit}>
                     <Text style={styles.submitButtonText}>Submit Profile</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity style={styles.noSetupDiv} onPress={() => navigation.navigate("Drawer")}>
-                    <Text style={styles.noSetupTxt}>Continue without Setup</Text>
-                    <ArrowRight />
-                </TouchableOpacity>
             </KeyboardAwareScrollView>
         </SafeAreaView>
     );

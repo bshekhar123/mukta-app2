@@ -35,14 +35,14 @@ const Login = ({ navigation }) => {
                     }
                     else {
                         await setLocalStorageItem("account", 2);
-                        navigation.navigate("Drawer");
+                        navigation.navigate("Demo");
                     }
                 }
                 else {
                     showError(res?.data?.error)
                 }
             }
-        } catch (error) {
+} catch (error) {
             console.log(error)
         }
     }
@@ -51,7 +51,8 @@ const Login = ({ navigation }) => {
         try {
             await setLocalStorageItem("token", "guest");
             await setLocalStorageItem("account", 3);
-            navigation.navigate("Drawer");
+            navigation.navigate("Demo");
+            // navigation.navigate("Drawer");
 
         } catch (error) {
             console.log(error)

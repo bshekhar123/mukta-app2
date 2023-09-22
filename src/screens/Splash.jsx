@@ -4,7 +4,7 @@ import { UserContext } from '../store/context/userContext';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../store/localStorage';
 
 const Splash = ({ navigation }) => {
-    const { getCustomer } = useContext(UserContext);
+    const { getCustomer, setToken } = useContext(UserContext);
     const InitialFunction = async () => {
         // await removeLocalStorageItem("token");
         // await removeLocalStorageItem("account");
@@ -13,7 +13,9 @@ const Splash = ({ navigation }) => {
             navigation.navigate("Login");
             return;
         }
+        setToken(token);
         if (token === "guest") {
+            setToken("guest");
             return navigation.navigate("Drawer");
         }
         const res = await getCustomer();
@@ -44,7 +46,8 @@ const Splash = ({ navigation }) => {
     }
 
     useEffect(() => {
-        InitialFunction();
+        // InitialFunction();
+        navigation.navigate("Login")
     }, [])
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

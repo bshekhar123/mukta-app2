@@ -1,50 +1,102 @@
 import React from 'react'
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Navbar from '../../components/Navbar';
-import sarees from '../../data/Saree';
+// import sarees from '../../data/Saree';
 import Rupee from '../../assets/Icons/Rupee';
+import { doGET, doPOST } from '../../store/httpUtil/httpUtils';
+import { ENDPOINTS, base_url, getImage } from '../../common/Constant';
+import { useFocusEffect } from '@react-navigation/native';
+import { UserContext } from '../../store/context/userContext';
+import { DialogContext } from '../../store/context/dialogContext';
 
-const Product = () => {
+const Product = ({ route }) => {
+    const { _id } = route?.params;
+    const [data, setData] = React.useState({});
+    const { token, accountData } = React.useContext(UserContext);
+    const { showError, showMessage } = React.useContext(DialogContext);
+
+    const fetchSareeData = async () => {
+        try {
+            const res = await doGET(`${base_url}${ENDPOINTS.getSaree(_id)}`)
+            if (res.status === 200)
+                setData(res.data)
+            else
+                console.log(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useFocusEffect(React.useCallback(() => {
+        fetchSareeData()
+    }, []))
+
+    const handleCart = async () => {
+        if (token == 'guest')
+            return showError("Login to use the Cart")
+        try {
+            const res = await doPOST(`${base_url}${ENDPOINTS.addToCart}`, { customer_id: accountData?._id, saree_id: _id })
+            if (res.status == 200) {
+                showMessage("success", res?.data?.message)
+            }
+            else if (res.status == 400) {
+                showError(res?.data?.message)
+            }
+            else {
+                console.log(res)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
-        <SafeAreaView style={{
-            backgroundColor: '#fff',
-            height: '100%'
-        }}>
-            <Navbar />
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }} style={styles.card}>
-                <View style={{ alignItems: 'center', marginBottom: 50 }}>
-                    <Image source={{ uri: "https://images.unsplash.com/photo-1692046904610-b5f0786a67d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80" }} style={styles.image} />
-                    <View style={styles.detailsContainer}>
-                        <Text style={styles.name}>{sarees[0].name}</Text>
-                        <Text style={styles.description}>{sarees[0].description}</Text>
-                        <View style={styles.priceContainer}>
-                            <Text style={styles.price}> <Rupee /> {sarees[0].price}</Text>
-                        </View>
-                        <View style={styles.rowtext}>
-                            <View>
-                                <Text style={styles.gut}>Deliver to- Shekhar</Text>
-                                <Text style={styles.guta}>F7 NIT Campus, kkr</Text>
+        // <SafeAreaView style={{
+        //     backgroundColor: '#fff',
+        //     height: '100%'
+        // }}>
+        //     <Navbar />
+        //     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
+        //         flexDirection: 'column',
+        //         alignItems: 'center',
+        //         justifyContent: 'center',
+        //     }} style={styles.card}>
+        //         <View style={{ alignItems: 'center', marginBottom: 50, width: '100%' }}>
+        //             <Image source={{ uri: getImage(data?.thumbnail) }} style={styles.image} />
+        //             <View style={styles.detailsContainer}>
+        //                 <Text style={styles.name}>{data?.name}</Text>
+        //                 <Text style={styles.description}>{data?.description}</Text>
+        //                 <View style={styles.priceContainer}>
+        //                     <Text style={styles.price}> <Rupee /> {data?.price}</Text>
+        //                 </View>
+        //                 <View style={styles.rowtext}>
+        //                     <View>
+        //                         <Text style={styles.gut}>Deliver to- Shekhar</Text>
+        //                         <Text style={styles.guta}>F7 NIT Campus, kkr</Text>
 
-                            </View>
-                            <TouchableOpacity style={styles.buttonContainer}>
-                                <Text style={styles.buttonText}>Change</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity style={styles.button}>
-                                <Text style={styles.cont}>Add to cart</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.button}>
-                                <Text style={styles.cont}>Buy now</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </ScrollView>
+        //                     </View>
+        //                     <TouchableOpacity style={styles.buttonContainer}>
+        //                         <Text style={styles.buttonText}>Change</Text>
+        //                     </TouchableOpacity>
+        //                 </View>
+        //                 <View style={styles.buttonsContainer}>
+        //                     <TouchableOpacity style={styles.button} onPress={handleCart}>
+        //                         <Text style={styles.cont}>Add to cart</Text>
+        //                     </TouchableOpacity>
+        //                     <TouchableOpacity style={styles.button}>
+        //                         <Text style={styles.cont}>Buy now</Text>
+        //                     </TouchableOpacity>
+        //                 </View>
+        //             </View>
+        //         </View>
+        //     </ScrollView>
+        // </SafeAreaView>
+        <SafeAreaView style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+            <Text>Screen 2</Text>
         </SafeAreaView>
     )
 }
@@ -57,7 +109,7 @@ const styles = StyleSheet.create({
     rowtext: {
         flexDirection: 'row',
         justifyContent: "space-between",
-        marginTop: 10
+        marginTop: 10,
     },
     gut: {
         fontWeight: 'bold',
@@ -75,7 +127,8 @@ const styles = StyleSheet.create({
     },
     detailsContainer: {
         padding: 10,
-        marginTop: 5
+        marginTop: 5,
+        width: '100%'
     },
     name: {
         fontSize: 16,
