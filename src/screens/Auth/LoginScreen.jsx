@@ -66,10 +66,10 @@ const Login = ({ navigation }) => {
     return (
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={styles.container} contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center', }}>
             <View style={styles.logoContainer} >
-                <Image source={require('../../assets/Images/Logo.png')} style={styles.logo} />
+                {/* <Image source={require('../../assets/Images/Logo.png')} style={styles.logo} /> */}
             </View>
             <Text style={styles.loginText}>{authState === 1 ? "Login / Sign up" : "Enter 6 Digit OTP"}</Text>
-            <View style={styles.inputContainer}>
+            <View style={styles.inputContainer}>z 
                 <TextInput
                     style={styles.input}
                     value={authState === 1 ? data?.phoneNumber : data?.otp}
